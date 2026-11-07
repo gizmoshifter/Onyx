@@ -986,3 +986,7 @@ body::after {
     opacity: 0.58;
   }
 }
+
+.champion-art { object-fit: cover; display: block; background: rgba(255,255,255,.06); }
+.error-state { display: grid; gap: 12px; }
+.retry-button { justify-self: start; display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; border-radius: 8px; border: 1px solid rgba(226,231,255,.18); background: rgba(255,255,255,.06); color: #e5ddff; font-size: 10px; cursor: pointer; }
