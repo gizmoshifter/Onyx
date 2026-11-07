@@ -1,67 +1,96 @@
-import { useState } from "react";
 import { Search } from "lucide-react";
-
-type Tab = "Overview" | "Champions" | "Builds";
-type Item = { id: string; name: string };
-type Champion = {
-  id: string;
-  name: string;
-  role: string;
-  items: Item[];
-};
 
 const dataDragonVersion = "16.22.1";
 const championImage = (id: string) =>
   "https://ddragon.leagueoflegends.com/cdn/" + dataDragonVersion + "/img/champion/" + id + ".png";
-const championSplash = (id: string) =>
-  "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/" + id + "_0.jpg";
 const itemImage = (id: string) =>
   "https://ddragon.leagueoflegends.com/cdn/" + dataDragonVersion + "/img/item/" + id + ".png";
 
-const champions: Champion[] = [
+type Match = {
+  championId: string;
+  champion: string;
+  mode: string;
+  result: "Victory" | "Defeat";
+  duration: string;
+  kda: string;
+  kdaRatio: string;
+  goldAt15: string;
+  cs: number;
+  csPerMinute: string;
+  towers: number;
+  firstBlood: boolean;
+  firstTower: boolean;
+  items: { id: string; name: string }[];
+  tip: string;
+};
+
+const matches: Match[] = [
   {
-    id: "Jinx",
-    name: "Jinx",
-    role: "ADC",
+    championId: "Jinx",
+    champion: "Jinx",
+    mode: "Ranked Solo / Duo",
+    result: "Victory",
+    duration: "28:14",
+    kda: "9 / 2 / 7",
+    kdaRatio: "8.0 KDA",
+    goldAt15: "+1.3k",
+    cs: 242,
+    csPerMinute: "8.6",
+    towers: 3,
+    firstBlood: true,
+    firstTower: true,
     items: [
       { id: "3031", name: "Infinity Edge" },
       { id: "3085", name: "Runaan's Hurricane" },
       { id: "3006", name: "Berserker's Greaves" }
-    ]
+    ],
+    tip: "First blood to first tower. Strong snowball; reset before your next push."
   },
   {
-    id: "Kaisa",
-    name: "Kai'Sa",
-    role: "ADC",
+    championId: "Kaisa",
+    champion: "Kai'Sa",
+    mode: "Ranked Solo / Duo",
+    result: "Defeat",
+    duration: "31:08",
+    kda: "3 / 6 / 5",
+    kdaRatio: "1.3 KDA",
+    goldAt15: "-0.9k",
+    cs: 208,
+    csPerMinute: "6.7",
+    towers: 1,
+    firstBlood: false,
+    firstTower: false,
     items: [
       { id: "3124", name: "Guinsoo's Rageblade" },
       { id: "3115", name: "Nashor's Tooth" },
       { id: "3006", name: "Berserker's Greaves" }
-    ]
+    ],
+    tip: "Down 900 gold at 15. Catch the next safe wave before forcing another fight."
   },
   {
-    id: "Caitlyn",
-    name: "Caitlyn",
-    role: "ADC",
+    championId: "Caitlyn",
+    champion: "Caitlyn",
+    mode: "Ranked Solo / Duo",
+    result: "Victory",
+    duration: "25:22",
+    kda: "7 / 3 / 8",
+    kdaRatio: "5.0 KDA",
+    goldAt15: "+0.9k",
+    cs: 205,
+    csPerMinute: "8.1",
+    towers: 2,
+    firstBlood: true,
+    firstTower: false,
     items: [
       { id: "3031", name: "Infinity Edge" },
       { id: "3094", name: "Rapid Firecannon" },
       { id: "3006", name: "Berserker's Greaves" }
-    ]
+    ],
+    tip: "You found first blood. Carry that tempo into plates for the first tower."
   }
 ];
 
-const tabs: Tab[] = ["Overview", "Champions", "Builds"];
-
 function App() {
-  const [tab, setTab] = useState<Tab>("Overview");
-  const [query, setQuery] = useState("");
-  const [selectedId, setSelectedId] = useState("Jinx");
-  const selected = champions.find(champion => champion.id === selectedId) ?? champions[0];
-  const filtered = champions.filter(champion =>
-    champion.name.toLowerCase().includes(query.trim().toLowerCase())
-  );
-
   return (
     <main className="app-shell">
       <aside className="sidebar">
@@ -70,109 +99,131 @@ function App() {
           <strong>ONYX</strong>
         </div>
 
-        <nav className="sidebar-nav" aria-label="Main navigation">
-          {tabs.map(item => (
-            <button
-              key={item}
-              className={tab === item ? "nav-item active" : "nav-item"}
-              onClick={() => setTab(item)}
-              aria-current={tab === item ? "page" : undefined}
-            >
-              {item}
-            </button>
-          ))}
-        </nav>
+        <div className="sidebar-profile">
+          <span className="eyebrow">PLAYER</span>
+          <strong>Sin <small>#O00</small></strong>
+          <span className="sidebar-region">North America</span>
+        </div>
 
         <div className="sidebar-bottom">
           <span className="demo-dot" />
-          <span>Preview</span>
+          <span>Preview mode</span>
         </div>
       </aside>
 
       <section className="content">
         <header className="topbar">
-          <span className="topbar-label">{tab}</span>
-          <span className="preview-pill"><i /> DEMO DATA</span>
+          <span className="topbar-label">PLAYER OVERVIEW</span>
+          <span className="preview-pill"><i /> SAMPLE DATA</span>
         </header>
 
         <div className="page">
-          <div className="page-heading">
+          <section className="profile-heading">
             <div>
-              <span className="eyebrow">LEAGUE OF LEGENDS</span>
-              <h1>{tab === "Builds" ? "Builds" : "Champions"}</h1>
+              <span className="eyebrow">NORTH AMERICA · LEAGUE OF LEGENDS</span>
+              <h1>Sin <small>#O00</small></h1>
             </div>
-            {tab !== "Builds" && (
-              <label className="search">
-                <Search size={17} aria-hidden="true" />
-                <input
-                  value={query}
-                  onChange={event => setQuery(event.target.value)}
-                  placeholder="Find a champion"
-                  aria-label="Find a champion"
-                />
-              </label>
-            )}
-          </div>
+            <p className="profile-note">Example matches · Riot data not connected</p>
+          </section>
 
-          {tab !== "Builds" && (
-            <section className="champion-grid" aria-label="Champion selection">
-              {filtered.map(champion => (
-                <button
-                  key={champion.id}
-                  className={selected.id === champion.id ? "champion-card selected" : "champion-card"}
-                  onClick={() => setSelectedId(champion.id)}
-                  aria-pressed={selected.id === champion.id}
+          <section className="summary-grid" aria-label="Recent performance sample">
+            <div className="summary-card">
+              <span>LAST 3 GAMES</span>
+              <strong>2W <i>–</i> 1L</strong>
+            </div>
+            <div className="summary-card">
+              <span>AVG KDA</span>
+              <strong>4.8</strong>
+            </div>
+            <div className="summary-card">
+              <span>CS / MIN</span>
+              <strong>7.8</strong>
+            </div>
+            <div className="summary-card">
+              <span>GOLD @ 15</span>
+              <strong className="positive">+0.4k</strong>
+            </div>
+          </section>
+
+          <section className="recent-section">
+            <div className="section-heading">
+              <div>
+                <span className="eyebrow">MATCH HISTORY</span>
+                <h2>Recent matches</h2>
+              </div>
+              <span className="sample-count">3 SAMPLE GAMES</span>
+            </div>
+
+            <div className="match-list">
+              {matches.map((match, index) => (
+                <article
+                  className={match.result === "Victory" ? "match-card victory" : "match-card defeat"}
+                  key={match.championId}
                 >
-                  <img
-                    className="champion-art"
-                    src={championSplash(champion.id)}
-                    alt={champion.name}
-                    loading="lazy"
-                  />
-                  <span className="art-shade" />
-                  <span className="champion-caption">
-                    <span>{champion.role}</span>
-                    <strong>{champion.name}</strong>
-                  </span>
-                  <img
-                    className="champion-portrait"
-                    src={championImage(champion.id)}
-                    alt=""
-                    aria-hidden="true"
-                    loading="lazy"
-                  />
-                </button>
+                  <div className="match-identity">
+                    <img
+                      className="match-champion"
+                      src={championImage(match.championId)}
+                      alt={match.champion}
+                      loading="lazy"
+                    />
+                    <span className="match-result">{match.result}</span>
+                    <strong>{match.champion}</strong>
+                    <small>{match.mode} · {match.duration}</small>
+                    <span className="game-number">SAMPLE GAME {index + 1}</span>
+                  </div>
+
+                  <div className="match-performance">
+                    <div className="kda-line">
+                      <strong>{match.kda}</strong>
+                      <span>{match.kdaRatio}</span>
+                    </div>
+
+                    <div className="match-stats">
+                      <div>
+                        <span>GOLD @ 15</span>
+                        <strong className={match.goldAt15.startsWith("+") ? "positive" : "negative"}>
+                          {match.goldAt15}
+                        </strong>
+                      </div>
+                      <div>
+                        <span>CS</span>
+                        <strong>{match.cs} <small>· {match.csPerMinute}/m</small></strong>
+                      </div>
+                      <div>
+                        <span>TOWERS</span>
+                        <strong>{match.towers}</strong>
+                      </div>
+                    </div>
+
+                    <div className="objective-row">
+                      <span className={match.firstBlood ? "objective secured" : "objective"}>
+                        <i /> First blood
+                      </span>
+                      <span className={match.firstTower ? "objective secured" : "objective"}>
+                        <i /> First tower
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="match-notes">
+                    <div className="match-items" aria-label="Items">
+                      {match.items.map(item => (
+                        <img key={item.id} src={itemImage(item.id)} alt={item.name} title={item.name} loading="lazy" />
+                      ))}
+                    </div>
+                    <div className="quick-tip">
+                      <span>QUICK TIP</span>
+                      <p>{match.tip}</p>
+                    </div>
+                  </div>
+                </article>
               ))}
-              {filtered.length === 0 && <p className="empty">No champions found.</p>}
-            </section>
-          )}
-
-          {tab !== "Champions" && (
-            <section className="build-panel" aria-label={selected.name + " example build"}>
-              <div className="build-heading">
-                <div className="selected-champion">
-                  <img src={championImage(selected.id)} alt="" />
-                  <div>
-                    <span className="eyebrow">EXAMPLE BUILD · {selected.role}</span>
-                    <h2>{selected.name}</h2>
-                  </div>
-                </div>
-                <span className="sample-label">SAMPLE ITEMS</span>
-              </div>
-
-              <div className="item-grid">
-                {selected.items.map(item => (
-                  <div className="item-card" key={item.id}>
-                    <img src={itemImage(item.id)} alt={item.name} loading="lazy" />
-                    <span>{item.name}</span>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
+            </div>
+          </section>
 
           <footer className="page-foot">
-            Artwork and item icons from Riot Data Dragon <span>·</span> Example data only
+            Sample match data only. Connect an approved Riot data source to load your real history.
           </footer>
         </div>
       </section>
