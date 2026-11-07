@@ -1,44 +1,48 @@
 # Onyx
 
-A lightweight Windows desktop companion for League of Legends, focused on preparation before a match and reflection after it.
+A personal League of Legends companion with a live player dashboard and post-game review.
 
-## Product boundaries
+## Current features
 
-- The current interface is a prototype. Champion rates, matchup notes, and recommendation examples are illustrative and are not connected to live patch statistics.
-- The app does not connect to the League Client, read live game state, or provide real-time instructions during a match.
-- Planned recommendations use static game information available before a match and player-selected context. They show multiple options and their reasoning so the player makes the decision.
-- Post-game coaching, if added, will run after the match and use data sources permitted by Riot.
-- A static in-game overlay is only a future possibility for information available before the game. It would not refresh from live game state or dictate actions, and would be reviewed against Riot's current requirements before release.
-- Riot's League of Legends policy says products serving players must be registered in the Developer Portal, even when they do not use documented APIs. Keep the product description current and follow the policies in effect at release.
+- Opens to the **Sin #O00 · North America** profile.
+- Connects to League's local Live Client Data API while a match is running.
+- Shows the active champion, game clock, KDA, CS per minute, current gold, team towers, first blood, first tower, and current items.
+- Generates short in-game tips from the player's visible stats and match events.
+- Recent match cards are still illustrative examples; real historical match data is not connected yet.
+- No ads or forced account sign-in.
 
-## Architecture
+## Live game connection
 
-- Tauri 2 + React + TypeScript + Vite.
-- Windows desktop shell using the Windows WebView runtime.
-- Static game data and recommendation logic are kept separate so data sources can be reviewed and replaced.
-- No League Client API (LCU) connection: Riot says that API is not officially supported for third-party applications.
+The live view reads `https://127.0.0.1:2999/liveclientdata/allgamedata` from the PC running League. It does not need a Riot API key.
 
-## Development
+For the browser preview, the Vite development server proxies this local endpoint:
 
 ```sh
 npm install
 npm run dev
 ```
 
-Desktop development requires Rust and the Tauri CLI:
+Open the local preview while League is running. The live panel checks for a match every four seconds.
+
+The Tauri desktop app reads the same local endpoint through its native command:
 
 ```sh
 npm run tauri dev
 ```
 
-## Roadmap
+## Data still to connect
 
-1. App shell and design system.
-2. Explainable pregame champion and build comparisons using permitted static data.
-3. Post-game review after a match has ended, using a permitted and documented data source.
-4. Accessibility, Windows packaging, and release readiness.
-5. Evaluate a static-only overlay with Riot's current policy and registration requirements before any implementation.
+Real past match history, verified gold-at-15 comparisons, and rank data need Riot's account and match-history APIs. Those credentials are not included in this public repository. The three historical match cards remain labeled as examples until that connection is added.
+
+## Architecture
+
+- Tauri 2 + React + TypeScript + Vite.
+- Windows desktop shell using the Windows WebView runtime.
+- Riot's local Live Client Data API for active-game data.
+- Riot Data Dragon for champion and item artwork.
 
 ## Riot disclaimer
 
 Onyx is not endorsed by Riot Games and does not reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games and all associated properties are trademarks or registered trademarks of Riot Games, Inc.
+
+Products serving League players must be registered in Riot's Developer Portal. Keep the product description current and follow Riot's policies.
