@@ -208,7 +208,7 @@ function liveTips(game: LiveGame): string[] {
   const tips: string[] = [];
 
   if (game.firstBlood === "You") {
-    tips.push("You secured first blood. Use the next safe reset to keep your item tempo.");
+    tips.push("You were involved in first blood. Use the next safe reset to keep your item tempo.");
   } else if (game.firstBlood === "Your team") {
     tips.push("Your team has first blood. Stay with the lead and avoid isolated trades.");
   } else if (game.firstBlood === "Enemy team") {
