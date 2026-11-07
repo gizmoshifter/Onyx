@@ -1,30 +1,48 @@
 # Onyx
 
-A lightweight League of Legends companion focused on useful, explainable recommendations.
+A personal League of Legends companion with a live player dashboard and post-game review.
 
-## Product principles
-- Free, ad-free, no forced account, no trackers.
-- Minimal resource use and a restrained, native-feeling interface.
-- Explain why an item, rune, or champion is recommended.
-- Patch-aware matchup and item data; never present stale data as current.
-- Optional compact in-game overlay; the companion remains useful independently.
+## Current features
+
+- Opens to the **Sin #O00 · North America** profile.
+- Connects to League's local Live Client Data API while a match is running.
+- Shows the active champion, game clock, KDA, CS per minute, current gold, team towers, first blood, first tower, and current items.
+- Generates short in-game tips from the player's visible stats and match events.
+- Recent match cards are still illustrative examples; real historical match data is not connected yet.
+- No ads or forced account sign-in.
+
+## Live game connection
+
+The live view reads `https://127.0.0.1:2999/liveclientdata/allgamedata` from the PC running League. It does not need a Riot API key.
+
+For the browser preview, the Vite development server proxies this local endpoint:
+
+```sh
+npm install
+npm run dev
+```
+
+Open the local preview while League is running. The live panel checks for a match every four seconds.
+
+The Tauri desktop app reads the same local endpoint through its native command:
+
+```sh
+npm run tauri dev
+```
+
+## Data still to connect
+
+Real past match history, verified gold-at-15 comparisons, and rank data need Riot's account and match-history APIs. Those credentials are not included in this public repository. The three historical match cards remain labeled as examples until that connection is added.
 
 ## Architecture
+
 - Tauri 2 + React + TypeScript + Vite.
-- Rust desktop layer for window management and local League Client (LCU) integration.
-- Separate data adapters for patch data, matchup statistics, and live game state.
-- Replaceable data sources; no paid service or API key required for the baseline.
+- Windows desktop shell using the Windows WebView runtime.
+- Riot's local Live Client Data API for active-game data.
+- Riot Data Dragon for champion and item artwork.
 
-## Development
-`npm install`
-`npm run dev`
+## Riot disclaimer
 
-Desktop development requires Rust and the Tauri CLI:
-`npm run tauri dev`
+Onyx is not endorsed by Riot Games and does not reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games and all associated properties are trademarks or registered trademarks of Riot Games, Inc.
 
-## Roadmap
-1. App shell and design system.
-2. Current-patch champion select and matchup recommendations.
-3. Explainable item/rune recommendations using enemy composition and builds.
-4. Optional LCU-connected live overlay.
-5. Tests, accessibility, and release packaging.
+Products serving League players must be registered in Riot's Developer Portal. Keep the product description current and follow Riot's policies.
