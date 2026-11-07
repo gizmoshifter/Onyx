@@ -925,3 +925,64 @@ input {
     line-height: 2;
   }
 }
+
+
+/* Slow ambient aurora: expressive color, almost no visual noise. */
+body::before {
+  inset: -18%;
+  background:
+    radial-gradient(ellipse at 18% 30%, rgba(139, 113, 255, 0.22), transparent 29%),
+    radial-gradient(ellipse at 77% 24%, rgba(79, 205, 218, 0.19), transparent 27%),
+    radial-gradient(ellipse at 64% 78%, rgba(221, 110, 179, 0.16), transparent 30%),
+    radial-gradient(ellipse at 34% 82%, rgba(87, 126, 224, 0.14), transparent 27%);
+  filter: blur(54px) saturate(118%);
+  opacity: 0.9;
+  animation: onyx-aurora-flow 38s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+  will-change: transform, filter;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  inset: -24%;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 49% 15%, rgba(112, 154, 255, 0.12), transparent 26%),
+    radial-gradient(ellipse at 86% 67%, rgba(157, 119, 255, 0.13), transparent 28%),
+    radial-gradient(ellipse at 12% 72%, rgba(89, 205, 194, 0.1), transparent 25%);
+  filter: blur(72px) saturate(125%);
+  opacity: 0.72;
+  transform-origin: 50% 50%;
+  animation: onyx-aurora-orbit 52s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes onyx-aurora-flow {
+  0% {
+    transform: translate3d(-2.8%, -1.4%, 0) scale(1) rotate(-2deg);
+    filter: blur(54px) saturate(112%) hue-rotate(-8deg);
+  }
+  50% {
+    transform: translate3d(1.2%, 1.8%, 0) scale(1.07) rotate(1deg);
+    filter: blur(58px) saturate(128%) hue-rotate(10deg);
+  }
+  100% {
+    transform: translate3d(2.6%, -1.2%, 0) scale(1.12) rotate(3deg);
+    filter: blur(54px) saturate(116%) hue-rotate(-3deg);
+  }
+}
+
+@keyframes onyx-aurora-orbit {
+  0% {
+    transform: translate3d(2%, -1.5%, 0) scale(0.98) rotate(-4deg);
+    opacity: 0.48;
+  }
+  50% {
+    opacity: 0.78;
+  }
+  100% {
+    transform: translate3d(-2%, 1.7%, 0) scale(1.08) rotate(5deg);
+    opacity: 0.58;
+  }
+}
