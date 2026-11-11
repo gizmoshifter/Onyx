@@ -37,6 +37,7 @@ import {
   Zap,
 } from "lucide-react";
 import { championIconUrl, getChampionCatalog, type Champion, type ChampionCatalog } from "./lib/riotData";
+import RiftDashboard from "./rift/RiftDashboard";
 
 declare global {
   interface Window {
@@ -234,6 +235,7 @@ function App() {
   }, [catalog, query]);
 
   if (mode === "overlay") return <OverlayView live={live} checked={liveChecked} patch={patch} onExit={() => setMode("standalone")} />;
+  if (mode === "standalone") return <RiftDashboardShell onModeChange={setMode} />;
   return <div className="shell">
     <aside className="sidebar">
       <div className="brand-lockup"><div className="brand-mark">◈</div><div className="brand-copy"><b>onyx</b><span>LEAGUE COMPANION</span></div></div>
@@ -244,10 +246,14 @@ function App() {
       <div className="sidebar-foot"><span><LockKeyhole size={12}/> NO ADS · NO TRACKERS</span><span>v0.1.0</span></div>
     </aside>
     <section className="content">
-      <header className="topbar"><div className="breadcrumb"><span>ONYX</span><ChevronRight size={13}/><b>{mode === "standalone" ? "HOME" : "PREGAME"}</b></div><div className="topbar-actions"><div className="patch-pill"><span className="signal live"/> PATCH {patch} <i>RIOT DATA</i></div><button className="icon-button" title="Settings"><Settings2 size={16}/></button><button className="profile-orb" title="Sin · North America">S</button></div></header>
-      <main className="page">{mode === "standalone" ? <StandaloneView patch={patch} live={live} selectedChampion={selectedChampion} onOpenOverlay={() => setMode("overlay")} /> : <PregameView patch={patch} catalog={catalog} catalogError={catalogError} filteredChampions={filteredChampions} selectedChampion={selectedChampion} selectedChampionId={selectedChampionId} onSelectChampion={setSelectedChampionId} query={query} onQuery={setQuery} role={role} onRole={setRole} tab={pregameTab} onTab={setPregameTab} detailsOpen={detailsOpen} onToggleDetails={() => setDetailsOpen(value => !value)} />}</main>
+      <header className="topbar"><div className="breadcrumb"><span>ONYX</span><ChevronRight size={13}/><b>PREGAME</b></div><div className="topbar-actions"><div className="patch-pill"><span className="signal live"/> PATCH {patch} <i>RIOT DATA</i></div><button className="icon-button" title="Settings"><Settings2 size={16}/></button><button className="profile-orb" title="Sin · North America">S</button></div></header>
+      <main className="page"><PregameView patch={patch} catalog={catalog} catalogError={catalogError} filteredChampions={filteredChampions} selectedChampion={selectedChampion} selectedChampionId={selectedChampionId} onSelectChampion={setSelectedChampionId} query={query} onQuery={setQuery} role={role} onRole={setRole} tab={pregameTab} onTab={setPregameTab} detailsOpen={detailsOpen} onToggleDetails={() => setDetailsOpen(value => !value)} /></main>
     </section>
   </div>;
+}
+
+function RiftDashboardShell({ onModeChange }: { onModeChange: (mode: Mode) => void }) {
+  return <div className="rift-shell"><RiftDashboard /><nav className="rift-mode-dock" aria-label="Onyx modes">{modes.map(item => { const Icon = item.icon; return <button key={item.id} className={item.id === "standalone" ? "active" : ""} onClick={() => onModeChange(item.id)} title={`${item.label} · ${item.hint}`}><Icon size={15}/><span>{item.label}</span></button>; })}</nav></div>;
 }
 
 function StandaloneView({ patch, live, selectedChampion, onOpenOverlay }: { patch: string; live: LiveGame | null; selectedChampion: Champion; onOpenOverlay: () => void }) {

@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #080a10;
+    color: #f1f5f9;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, .font-heading {
+    font-family: 'Rajdhani', 'Inter', sans-serif;
+    letter-spacing: 0.025em;
+  }
+
+  .font-cinzel {
+    font-family: 'Cinzel', serif;
+  }
+}
+
+/* Apple-Style Translucent Frosted Glass Styles */
+.glass-panel {
+  background: rgba(13, 18, 32, 0.42);
+  backdrop-filter: blur(32px) saturate(190%);
+  -webkit-backdrop-filter: blur(32px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4), inset 0 1px 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.glass-subtle {
+  background: rgba(13, 18, 32, 0.26);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+  background: linear-gradient(135deg, rgba(18, 26, 46, 0.46) 0%, rgba(10, 14, 28, 0.38) 100%);
+  backdrop-filter: blur(32px) saturate(200%);
+  -webkit-backdrop-filter: blur(32px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  box-shadow: 0 20px 45px -12px rgba(0, 0, 0, 0.55), inset 0 1px 1px 0 rgba(255, 255, 255, 0.16);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 24px 55px -10px rgba(0, 0, 0, 0.65), inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* Luminous Accent Glows */
+.glow-cyan {
+  box-shadow: 0 0 25px -4px rgba(14, 165, 233, 0.4);
+}
+
+.glow-gold {
+  box-shadow: 0 0 25px -4px rgba(234, 179, 8, 0.4);
+}
+
+.glow-purple {
+  box-shadow: 0 0 25px -4px rgba(168, 85, 247, 0.4);
+}
+
+.glow-green {
+  box-shadow: 0 0 25px -4px rgba(16, 185, 129, 0.4);
+}
+
+.glow-red {
+  box-shadow: 0 0 25px -4px rgba(239, 68, 68, 0.4);
+}
+
+.glow-orange {
+  box-shadow: 0 0 25px -4px rgba(249, 115, 22, 0.4);
+}
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(8, 10, 16, 0.5);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Animations for randomized ambient mesh loop */
+@keyframes driftSlow {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  33% {
+    transform: translate(12vw, 15vh) scale(1.15) rotate(120deg);
+  }
+  66% {
+    transform: translate(-10vw, 8vh) scale(0.92) rotate(240deg);
+  }
+  100% {
+    transform: translate(0, 0) scale(1) rotate(360deg);
+  }
+}
+
+@keyframes driftReverse {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  33% {
+    transform: translate(-14vw, -12vh) scale(1.18) rotate(-120deg);
+  }
+  66% {
+    transform: translate(12vw, -15vh) scale(0.95) rotate(-240deg);
+  }
+  100% {
+    transform: translate(0, 0) scale(1) rotate(-360deg);
+  }
+}
+
+.animate-drift-slow {
+  animation: driftSlow 31s ease-in-out infinite;
+}
+
+.animate-drift-reverse {
+  animation: driftReverse 43s ease-in-out infinite;
+}
+
