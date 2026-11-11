@@ -80,8 +80,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#080a10] text-slate-100 flex flex-col font-sans selection:bg-sky-500/30 selection:text-sky-200 relative overflow-x-hidden">
-      {/* High-Dynamic Ambient Light Mesh */}
-      <AmbientBackground />
+      {/* The live HUD keeps the animated mesh off for lower-end machines. */}
+      {activeTab !== 'overlay' && <AmbientBackground />}
 
       {/* Sleek Minimal Onyx Header */}
       <Header
