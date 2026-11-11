@@ -36,7 +36,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import { championIconUrl, getChampionCatalog, type Champion, type ChampionCatalog } from "./lib/riotData";
+import { championIconUrl, getChampionCatalog, getChampionDetails, spellIconUrl, type Champion, type ChampionCatalog, type ChampionDetails } from "./lib/riotData";
 import RiftDashboard from "./rift/RiftDashboard";
 
 declare global {
@@ -66,6 +66,7 @@ type LiveGame = {
   firstBlood: string | null;
   firstTower: string | null;
   items: LiveItem[];
+  wardScore: number;
 };
 
 const CDN = "https://ddragon.leagueoflegends.com/cdn";
@@ -176,6 +177,7 @@ function normalizeLiveGame(data: unknown): LiveGame | null {
     towers: events.filter(event => event.EventName === "TurretKilled" && ["You", "Your team"].includes(eventTeam(event) || "")).length,
     firstBlood: firstKill ? eventTeam(firstKill) : null, firstTower: firstTower ? eventTeam(firstTower) : null,
     items: (Array.isArray(player.items) ? player.items : []).filter((item: Record<string, any>) => Number(item.itemID) > 0).map((item: Record<string, any>) => ({ id: String(item.itemID), name: String(item.displayName || "Item") })),
+    wardScore: Number(player.scores?.wardScore || 0),
   };
 }
 
@@ -209,6 +211,7 @@ function App() {
   const [selectedChampionId, setSelectedChampionId] = useState("Jinx");
   const [live, setLive] = useState<LiveGame | null>(null);
   const [liveChecked, setLiveChecked] = useState(false);
+  const [liveChampionDetails, setLiveChampionDetails] = useState<ChampionDetails | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(true);
 
   useEffect(() => {
@@ -226,6 +229,18 @@ function App() {
   }, [mode]);
 
   const patch = catalog?.patch ?? PATCH_FALLBACK;
+  useEffect(() => {
+    let alive = true;
+    const champion = catalog?.champions.find(item => item.name.toLocaleLowerCase() === (live?.champion ?? '').toLocaleLowerCase());
+    if (!champion || !live) {
+      setLiveChampionDetails(null);
+      return () => { alive = false; };
+    }
+    void getChampionDetails(patch, champion.id)
+      .then(details => { if (alive) setLiveChampionDetails(details); })
+      .catch(() => { if (alive) setLiveChampionDetails(null); });
+    return () => { alive = false; };
+  }, [catalog, live?.champion, patch]);
   const fallbackChampion: Champion = { id: selectedChampionId, key: "0", name: selectedChampionId, title: "The spark in the dark", blurb: "Choose a champion to explore current static details and a clear pregame plan.", tags: [role === "ALL" ? "MID" : role], image: { full: `${selectedChampionId}.png` } };
   const selectedChampion = catalog?.champions.find(champion => champion.id === selectedChampionId) ?? catalog?.champions[0] ?? fallbackChampion;
   const filteredChampions = useMemo(() => {
@@ -234,7 +249,7 @@ function App() {
     return catalog.champions.filter(champion => !normalized || champion.name.toLocaleLowerCase().includes(normalized) || champion.title.toLocaleLowerCase().includes(normalized)).slice(0, normalized ? 12 : 8);
   }, [catalog, query]);
 
-  if (mode === "overlay") return <OverlayView live={live} checked={liveChecked} patch={patch} onExit={() => setMode("standalone")} />;
+  if (mode === "overlay") return <OverlayView live={live} checked={liveChecked} patch={patch} championDetails={liveChampionDetails} onExit={() => setMode("standalone")} />;
   if (mode === "standalone") return <RiftDashboardShell onModeChange={setMode} />;
   return <div className="shell">
     <aside className="sidebar">
@@ -304,10 +319,27 @@ function PregameView({ patch, catalog, catalogError, filteredChampions, selected
   </div>;
 }
 
-function OverlayView({ live, checked, patch, onExit }: { live: LiveGame | null; checked: boolean; patch: string; onExit: () => void }) {
+function OverlayView({ live, checked, patch, championDetails, onExit }: { live: LiveGame | null; checked: boolean; patch: string; championDetails: ChampionDetails | null; onExit: () => void }) {
   const itemList = live?.items.slice(0, 6) ?? [];
-  return <div className="overlay-shell"><div className="overlay-top"><div className="overlay-brand"><span className="brand-mark small">◈</span><b>ONYX</b><span className="overlay-live"><span className={`signal ${live ? "live" : ""}`}/>{live ? "LIVE" : "READY"}</span></div><div className="overlay-actions"><button title="Pin overlay"><LockKeyhole size={13}/></button><button title="Return to Onyx" onClick={onExit}><X size={15}/></button></div></div>{live ? <><div className="overlay-main"><div className="overlay-champion"><div className="overlay-avatar">{live.champion.slice(0, 1)}</div><div><b>{live.champion}</b><span>{live.gameMode}</span></div></div><div className="overlay-clock"><Timer size={13}/><b>{formatClock(live.gameTime)}</b><span>LV {live.level}</span></div></div><div className="overlay-stats"><div><b>{live.kills}</b><span>K</span></div><i>/</i><div><b>{live.deaths}</b><span>D</span></div><i>/</i><div><b>{live.assists}</b><span>A</span></div><div className="overlay-stat-divider"/><div><b>{live.cs}</b><span>CS</span></div><div><b>{Math.round(live.csPerMinute * 10) / 10}</b><span>CS/M</span></div><div><b>{live.currentGold.toLocaleString()}</b><span>GOLD</span></div></div><div className="overlay-bottom"><div className="overlay-items">{itemList.length ? itemList.map(item => <img key={item.id} src={itemUrl(patch, item.id)} alt={item.name} title={item.name}/>) : <span className="muted-inline">NO ITEMS</span>}</div><div className="overlay-tip"><Sparkles size={13}/><span>{live.firstTower ? "First tower secured. Reset clean." : live.firstBlood ? `${live.firstBlood} first blood.` : "Hold the next safe wave."}</span></div></div></> : <div className="overlay-empty"><Activity size={22}/><b>{checked ? "Waiting for League" : "Connecting"}</b><span>Start a match to wake the overlay.</span></div>}<div className="overlay-footer"><span>PATCH {patch}</span><span><MousePointer2 size={12}/> ALWAYS ON TOP</span></div></div>;
+  const spells = championDetails?.spells.slice(0, 4) ?? [];
+  const ultimate = spells[3];
+  const longUltimate = Boolean(ultimate?.cooldown?.some(seconds => seconds >= 60));
+  return <div className="overlay-shell"><div className="overlay-top"><div className="overlay-brand"><span className="brand-mark small">◈</span><b>ONYX</b><span className="overlay-live"><span className={`signal ${live ? "live" : ""}`}/>{live ? "LIVE" : "READY"}</span></div><div className="overlay-actions"><button title="Pin overlay"><LockKeyhole size={13}/></button><button title="Return to Onyx" onClick={onExit}><X size={15}/></button></div></div>{live ? <><div className="overlay-main"><div className="overlay-champion"><div className="overlay-avatar">{live.champion.slice(0, 1)}</div><div><b>{live.champion}</b><span>{live.gameMode}</span></div></div><div className="overlay-clock"><Timer size={13}/><b>{formatClock(live.gameTime)}</b><span>LV {live.level}</span></div></div><div className="overlay-stats"><div><b>{live.kills}</b><span>K</span></div><i>/</i><div><b>{live.deaths}</b><span>D</span></div><i>/</i><div><b>{live.assists}</b><span>A</span></div><div className="overlay-stat-divider"/><div><b>{live.cs}</b><span>CS</span></div><div><b>{Math.round(live.csPerMinute * 10) / 10}</b><span>CS/M</span></div><div><b>{live.currentGold.toLocaleString()}</b><span>GOLD</span></div></div><div className="overlay-abilities" aria-label="Your ability icons">
+  <span className="overlay-section-label">ABILITIES · SELF</span>
+  <div className="overlay-ability-row">
+    {spells.slice(0, 3).map((spell, index) => <img key={spell.id} src={spellIconUrl(patch, spell)} alt={spell.name} title={`${['Q', 'W', 'E'][index]} · ${spell.name}`} />)}
+    {ultimate && (longUltimate
+      ? <img className="long" src={spellIconUrl(patch, ultimate)} alt={ultimate.name} title={`R · ${ultimate.name}`} />
+      : <span className="short-ult" title={`R · ${ultimate.name} · compact indicator`}>R<small>◷</small></span>)}
+  </div>
+</div><div className="overlay-bottom"><div className="overlay-items">{itemList.length ? itemList.map(item => <img key={item.id} src={itemUrl(patch, item.id)} alt={item.name} title={item.name}/>) : <span className="muted-inline">NO ITEMS</span>}</div><div className="overlay-tip"><Sparkles size={13}/><span>{live.firstTower ? "First tower secured. Reset clean." : live.firstBlood ? `${live.firstBlood} first blood.` : "Hold the next safe wave."}</span></div></div><div className="overlay-awareness">
+  <span><EyeGlyph label="GOLD" value={live.currentGold.toLocaleString() + 'g'} /></span>
+  <span><EyeGlyph label="WARD" value={String(live.wardScore)} /></span>
+  <span><EyeGlyph label="RESET" value={live.currentGold >= 900 ? 'OPEN' : 'SAVE'} /></span>
+</div></> : <div className="overlay-empty"><Activity size={22}/><b>{checked ? "Waiting for League" : "Connecting"}</b><span>Start a match to wake the overlay.</span></div>}<div className="overlay-footer"><span>PATCH {patch}</span><span><MousePointer2 size={12}/> ALWAYS ON TOP</span></div></div>;
 }
+
+function EyeGlyph({ label, value }: { label: string; value: string }) { return <span className="overlay-read"><small>{label}</small><b>{value}</b></span>; }
 
 function Metric({ icon: Icon, value, label, tone }: { icon: IconType; value: string; label: string; tone: string }) { return <div className={`metric ${tone}`}><Icon size={14}/><b>{value}</b><span>{label}</span></div>; }
 function MatchCard({ match, patch }: { match: typeof matchHistory[number]; patch: string }) { return <button className="match-card"><div className="match-top"><div className={`result-dot ${match.tone}`}><Check size={12}/></div><div><b>{match.champion}</b><span>{match.duration} <i>·</i> {match.result}</span></div><ArrowUpRight size={14}/></div><div className="match-stats"><span>{match.kda}</span><span>{match.cs} CS/M</span><span>PATCH {patch}</span></div><p>{match.note}</p></button>; }
