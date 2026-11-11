@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { LogicalSize } from "@tauri-apps/api/dpi";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
   Activity,
@@ -193,6 +194,7 @@ async function configureOverlay(enabled: boolean): Promise<void> {
     await appWindow.setAlwaysOnTop(enabled);
     await appWindow.setDecorations(!enabled);
     await appWindow.setResizable(!enabled);
+    await appWindow.setSize(new LogicalSize(enabled ? 420 : 1180, enabled ? 240 : 780));
   } catch { /* Browser preview and older desktop builds keep the normal window. */ }
 }
 
