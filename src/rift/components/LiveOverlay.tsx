@@ -42,7 +42,7 @@ export const LiveOverlay: React.FC<LiveOverlayProps> = ({ champion, match }) => 
         <div>
           <div className="flex items-center gap-2 text-[10px] font-mono font-bold uppercase tracking-[0.18em] text-sky-300">
             <Radio className="h-3 w-3" />
-            HUD / LIVE
+            HUD / PREVIEW
           </div>
           <h2 className="mt-1 text-2xl font-heading font-extrabold text-white">Overlay</h2>
         </div>
@@ -60,7 +60,7 @@ export const LiveOverlay: React.FC<LiveOverlayProps> = ({ champion, match }) => 
             <span className="text-[10px] font-mono font-bold tracking-[0.16em] text-slate-200">ONYX</span>
             <span className="flex items-center gap-1 rounded-md border border-emerald-400/20 bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-mono font-bold text-emerald-300">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-              LIVE
+              PREVIEW
             </span>
           </div>
           <div className="flex items-center gap-2">
