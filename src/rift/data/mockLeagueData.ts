@@ -1441,6 +1441,8 @@ export const CHAMPIONS_METADATA: ChampionMeta[] = [
         icon: IMG_SPELL('AhriR'),
         description: 'Dashes forward up to 3 times, firing essence bolts at nearby champions.',
         symbol: '👑',
+        cooldownSeconds: [130, 105, 80],
+        cooldownClass: 'long',
       },
     },
     startingItems: [ITEMS.doranRing, ITEMS.healthPotion, ITEMS.healthPotion, ITEMS.stealthWard],
