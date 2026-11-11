@@ -13,6 +13,7 @@ import { AmbientBackground } from './components/AmbientBackground';
 import { UserSummonerCard } from './components/UserSummonerCard';
 import { SummonerPickerModal } from './components/SummonerPickerModal';
 import { HomeLiveFeed } from './components/HomeLiveFeed';
+import { LiveOverlay } from './components/LiveOverlay';
 import { Role, Region, ProMatch, UserSummonerProfile } from './types/league';
 import { CHAMPIONS_METADATA, RECENT_PRO_MATCHES, USER_SUMMONER_PRESETS } from './data/mockLeagueData';
 
@@ -21,7 +22,7 @@ export default function App() {
   const [selectedPlayerId, setSelectedPlayerId] = useState<string>('faker');
   const [selectedRole, setSelectedRole] = useState<Role | 'ALL'>('ALL');
   const [selectedRegion, setSelectedRegion] = useState<Region>('ALL');
-  const [activeTab, setActiveTab] = useState<'builds' | 'ranks' | 'matchups' | 'pros' | 'sandbox'>('builds');
+  const [activeTab, setActiveTab] = useState<'builds' | 'overlay' | 'ranks' | 'matchups' | 'pros' | 'sandbox'>('builds');
   const [activeMatch, setActiveMatch] = useState<ProMatch | null>(null);
 
   // User Profile Picker (First Launch & Persistent HUD)
@@ -62,6 +63,10 @@ export default function App() {
   const activeChampion =
     CHAMPIONS_METADATA.find((c) => c.id.toLowerCase() === selectedChampionId.toLowerCase()) ||
     CHAMPIONS_METADATA[0];
+  const overlayMatch =
+    RECENT_PRO_MATCHES.find((match) =>
+      match.blueTeam.some((player) => player.championId.toLowerCase() === activeChampion.id.toLowerCase())
+    ) || RECENT_PRO_MATCHES[0];
 
   const handleSelectRole = (role: Role | 'ALL') => {
     setSelectedRole(role);
@@ -101,6 +106,13 @@ export default function App() {
 
       {/* Main Container Area */}
       <main className="flex-1 max-w-7xl mx-auto px-4 py-6 w-full relative z-10 space-y-6">
+        {/* Tab 0: COMPACT LIVE HUD PREVIEW */}
+        {activeTab === 'overlay' && (
+          <div className="mx-auto max-w-xl animate-fadeIn">
+            <LiveOverlay champion={activeChampion} match={overlayMatch} />
+          </div>
+        )}
+
         {/* Tab 1: HOME SCREEN (User Summoner HUD, Live Patch Feed, Champion Hero, Runes, Matches) */}
         {activeTab === 'builds' && (
           <div className="space-y-6 animate-fadeIn">
