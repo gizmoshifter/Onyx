@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Search, Shield, Trophy, Flame, Sparkles, Filter, ChevronDown, ChevronUp, Users, RefreshCw, Radio } from 'lucide-react';
+import { Search, Shield, Trophy, Flame, Sparkles, Filter, ChevronDown, ChevronUp, Users, RefreshCw, Radio, Zap } from 'lucide-react';
+import type { VisualMode } from '../../App';
 import { Role, Region, UserSummonerProfile } from '../types/league';
 import { CHAMPIONS_METADATA, PRO_PROFILES } from '../data/mockLeagueData';
 import { getRankEmblemUrl } from '../utils/buildCalculations';
@@ -14,6 +15,8 @@ interface HeaderProps {
   onSelectPlayer: (playerId: string) => void;
   activeTab: 'builds' | 'overlay' | 'ranks' | 'matchups' | 'pros' | 'sandbox';
   setActiveTab: (tab: 'builds' | 'overlay' | 'ranks' | 'matchups' | 'pros' | 'sandbox') => void;
+  visualMode: VisualMode;
+  onVisualModeChange: (mode: VisualMode) => void;
   userProfile?: UserSummonerProfile;
   onOpenSummonerPicker?: () => void;
 }
@@ -28,6 +31,8 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectPlayer,
   activeTab,
   setActiveTab,
+  visualMode,
+  onVisualModeChange,
   userProfile,
   onOpenSummonerPicker,
 }) => {
@@ -243,6 +248,17 @@ export const Header: React.FC<HeaderProps> = ({
               />
             </button>
           )}
+
+          {/* Visual quality switch */}
+          <button
+            onClick={() => onVisualModeChange(visualMode === 'high' ? 'low' : 'high')}
+            className={`visual-mode-toggle ${visualMode}`}
+            title={visualMode === 'high' ? 'High visuals · click for low-end mode' : 'Low-end mode · click for high visuals'}
+            aria-label={visualMode === 'high' ? 'Switch to low-end visuals' : 'Switch to high-end visuals'}
+          >
+            <Zap className="w-3.5 h-3.5" />
+            <span>{visualMode === 'high' ? 'HIGH' : 'LOW'}</span>
+          </button>
 
           {/* Pin/Unpin Controls */}
           <button

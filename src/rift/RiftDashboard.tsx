@@ -16,8 +16,9 @@ import { HomeLiveFeed } from './components/HomeLiveFeed';
 import { LiveOverlay } from './components/LiveOverlay';
 import { Role, Region, ProMatch, UserSummonerProfile } from './types/league';
 import { CHAMPIONS_METADATA, RECENT_PRO_MATCHES, USER_SUMMONER_PRESETS } from './data/mockLeagueData';
+import type { VisualMode } from '../../src/App';
 
-export default function App() {
+export default function App({ visualMode, onVisualModeChange }: { visualMode: VisualMode; onVisualModeChange: (mode: VisualMode) => void }) {
   const [selectedChampionId, setSelectedChampionId] = useState<string>('Ahri');
   const [selectedPlayerId, setSelectedPlayerId] = useState<string>('faker');
   const [selectedRole, setSelectedRole] = useState<Role | 'ALL'>('ALL');
@@ -101,6 +102,8 @@ export default function App() {
         }}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
+        visualMode={visualMode}
+        onVisualModeChange={onVisualModeChange}
         userProfile={userProfile}
         onOpenSummonerPicker={() => setIsPickerOpen(true)}
       />

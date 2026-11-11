@@ -46,6 +46,7 @@ declare global {
 }
 
 type Mode = "standalone" | "pregame" | "overlay";
+export type VisualMode = "low" | "high";
 type PregameTab = "builds" | "matchups" | "runes";
 type IconType = typeof LayoutDashboard;
 
@@ -203,6 +204,13 @@ async function configureOverlay(enabled: boolean): Promise<void> {
 
 function App() {
   const [mode, setMode] = useState<Mode>("standalone");
+  const [visualMode, setVisualMode] = useState<VisualMode>(() => {
+    try {
+      return localStorage.getItem("onyx_visual_mode") === "low" ? "low" : "high";
+    } catch {
+      return "high";
+    }
+  });
   const [pregameTab, setPregameTab] = useState<PregameTab>("builds");
   const [query, setQuery] = useState("");
   const [role, setRole] = useState("ALL");
@@ -223,6 +231,14 @@ function App() {
     document.body.classList.toggle("onyx-overlay-mode", mode === "overlay");
     return () => document.body.classList.remove("onyx-overlay-mode");
   }, [mode]);
+  useEffect(() => {
+    document.body.dataset.visualMode = visualMode;
+    try {
+      localStorage.setItem("onyx_visual_mode", visualMode);
+    } catch {
+      // Preview browsers may block local storage.
+    }
+  }, [visualMode]);
   useEffect(() => { void configureOverlay(mode === "overlay"); return () => { if (mode === "overlay") void configureOverlay(false); }; }, [mode]);
   useEffect(() => {
     let alive = true;
@@ -253,8 +269,8 @@ function App() {
     return catalog.champions.filter(champion => !normalized || champion.name.toLocaleLowerCase().includes(normalized) || champion.title.toLocaleLowerCase().includes(normalized)).slice(0, normalized ? 12 : 8);
   }, [catalog, query]);
 
-  if (mode === "overlay") return <OverlayView live={live} checked={liveChecked} patch={patch} championDetails={liveChampionDetails} onExit={() => setMode("standalone")} />;
-  if (mode === "standalone") return <RiftDashboardShell onModeChange={setMode} />;
+  if (mode === "overlay") return <OverlayView live={live} checked={liveChecked} patch={patch} championDetails={liveChampionDetails} visualMode={visualMode} onExit={() => setMode("standalone")} />;
+  if (mode === "standalone") return <RiftDashboardShell visualMode={visualMode} onVisualModeChange={setVisualMode} onModeChange={setMode} />;
   return <div className="shell">
     <aside className="sidebar">
       <div className="brand-lockup"><div className="brand-mark">◈</div><div className="brand-copy"><b>onyx</b><span>LEAGUE COMPANION</span></div></div>
@@ -271,8 +287,8 @@ function App() {
   </div>;
 }
 
-function RiftDashboardShell({ onModeChange }: { onModeChange: (mode: Mode) => void }) {
-  return <div className="rift-shell"><RiftDashboard /><nav className="rift-mode-dock" aria-label="Onyx modes">{modes.map(item => { const Icon = item.icon; return <button key={item.id} className={item.id === "standalone" ? "active" : ""} onClick={() => onModeChange(item.id)} title={`${item.label} · ${item.hint}`}><Icon size={15}/><span>{item.label}</span></button>; })}</nav></div>;
+function RiftDashboardShell({ visualMode, onVisualModeChange, onModeChange }: { visualMode: VisualMode; onVisualModeChange: (mode: VisualMode) => void; onModeChange: (mode: Mode) => void }) {
+  return <div className={`rift-shell visual-${visualMode}`}><RiftDashboard visualMode={visualMode} onVisualModeChange={onVisualModeChange} /><nav className="rift-mode-dock" aria-label="Onyx modes">{modes.map(item => { const Icon = item.icon; return <button key={item.id} className={item.id === "standalone" ? "active" : ""} onClick={() => onModeChange(item.id)} title={`${item.label} · ${item.hint}`}><Icon size={15}/><span>{item.label}</span></button>; })}</nav></div>;
 }
 
 function StandaloneView({ patch, live, selectedChampion, onOpenOverlay }: { patch: string; live: LiveGame | null; selectedChampion: Champion; onOpenOverlay: () => void }) {
@@ -323,12 +339,12 @@ function PregameView({ patch, catalog, catalogError, filteredChampions, selected
   </div>;
 }
 
-function OverlayView({ live, checked, patch, championDetails, onExit }: { live: LiveGame | null; checked: boolean; patch: string; championDetails: ChampionDetails | null; onExit: () => void }) {
+function OverlayView({ live, checked, patch, championDetails, visualMode, onExit }: { live: LiveGame | null; checked: boolean; patch: string; championDetails: ChampionDetails | null; visualMode: VisualMode; onExit: () => void }) {
   const itemList = live?.items.slice(0, 6) ?? [];
   const spells = championDetails?.spells.slice(0, 4) ?? [];
   const ultimate = spells[3];
   const longUltimate = Boolean(ultimate?.cooldown?.some(seconds => seconds >= 60));
-  return <div className="overlay-shell"><div className="overlay-top"><div className="overlay-brand"><span className="brand-mark small">◈</span><b>ONYX</b><span className="overlay-live"><span className={`signal ${live ? "live" : ""}`}/>{live ? "LIVE" : "READY"}</span></div><div className="overlay-actions"><button title="Pin overlay"><LockKeyhole size={13}/></button><button title="Return to Onyx" onClick={onExit}><X size={15}/></button></div></div>{live ? <><div className="overlay-main"><div className="overlay-champion"><div className="overlay-avatar">{live.champion.slice(0, 1)}</div><div><b>{live.champion}</b><span>{live.gameMode}</span></div></div><div className="overlay-clock"><Timer size={13}/><b>{formatClock(live.gameTime)}</b><span>LV {live.level}</span></div></div><div className="overlay-stats"><div><b>{live.kills}</b><span>K</span></div><i>/</i><div><b>{live.deaths}</b><span>D</span></div><i>/</i><div><b>{live.assists}</b><span>A</span></div><div className="overlay-stat-divider"/><div><b>{live.cs}</b><span>CS</span></div><div><b>{Math.round(live.csPerMinute * 10) / 10}</b><span>CS/M</span></div><div><b>{live.currentGold.toLocaleString()}</b><span>GOLD</span></div></div><div className="overlay-abilities" aria-label="Your ability icons">
+  return <div className={`overlay-shell visual-${visualMode}`}><div className="overlay-top"><div className="overlay-brand"><span className="brand-mark small">◈</span><b>ONYX</b><span className="overlay-live"><span className={`signal ${live ? "live" : ""}`}/>{live ? "LIVE" : "READY"}</span></div><div className="overlay-actions"><button title="Pin overlay"><LockKeyhole size={13}/></button><button title="Return to Onyx" onClick={onExit}><X size={15}/></button></div></div>{live ? <><div className="overlay-main"><div className="overlay-champion"><div className="overlay-avatar">{live.champion.slice(0, 1)}</div><div><b>{live.champion}</b><span>{live.gameMode}</span></div></div><div className="overlay-clock"><Timer size={13}/><b>{formatClock(live.gameTime)}</b><span>LV {live.level}</span></div></div><div className="overlay-stats"><div><b>{live.kills}</b><span>K</span></div><i>/</i><div><b>{live.deaths}</b><span>D</span></div><i>/</i><div><b>{live.assists}</b><span>A</span></div><div className="overlay-stat-divider"/><div><b>{live.cs}</b><span>CS</span></div><div><b>{Math.round(live.csPerMinute * 10) / 10}</b><span>CS/M</span></div><div><b>{live.currentGold.toLocaleString()}</b><span>GOLD</span></div></div><div className="overlay-abilities" aria-label="Your ability icons">
   <span className="overlay-section-label">ABILITIES · SELF</span>
   <div className="overlay-ability-row">
     {spells.slice(0, 3).map((spell, index) => <img key={spell.id} src={spellIconUrl(patch, spell)} alt={spell.name} title={`${['Q', 'W', 'E'][index]} · ${spell.name}`} />)}
