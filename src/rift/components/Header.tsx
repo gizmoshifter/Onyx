@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Shield, Trophy, Flame, Sparkles, Filter, ChevronDown, ChevronUp, Users, RefreshCw, Radio, Zap } from 'lucide-react';
+import { Search, Shield, Trophy, Flame, Sparkles, Filter, ChevronDown, ChevronUp, Users, RefreshCw, Radio, Zap, ShoppingBag } from 'lucide-react';
 import type { VisualMode } from '../../App';
 import { Role, Region, UserSummonerProfile } from '../types/league';
 import { CHAMPIONS_METADATA, PRO_PROFILES } from '../data/mockLeagueData';
@@ -13,8 +13,8 @@ interface HeaderProps {
   selectedChampion: string;
   onSelectChampion: (champId: string) => void;
   onSelectPlayer: (playerId: string) => void;
-  activeTab: 'builds' | 'overlay' | 'ranks' | 'matchups' | 'pros' | 'sandbox';
-  setActiveTab: (tab: 'builds' | 'overlay' | 'ranks' | 'matchups' | 'pros' | 'sandbox') => void;
+  activeTab: 'builds' | 'overlay' | 'market' | 'ranks' | 'matchups' | 'pros' | 'sandbox';
+  setActiveTab: (tab: 'builds' | 'overlay' | 'market' | 'ranks' | 'matchups' | 'pros' | 'sandbox') => void;
   visualMode: VisualMode;
   onVisualModeChange: (mode: VisualMode) => void;
   userProfile?: UserSummonerProfile;
@@ -122,6 +122,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sky-500/20 border border-sky-400/30 text-[11px] text-sky-300 font-mono font-semibold">
               {activeTab === 'builds' && <Shield className="w-3 h-3" />}
               {activeTab === 'overlay' && <Radio className="w-3 h-3" />}
+              {activeTab === 'market' && <ShoppingBag className="w-3 h-3" />}
               {activeTab === 'ranks' && <Trophy className="w-3 h-3" />}
               {activeTab === 'matchups' && <Flame className="w-3 h-3" />}
               {activeTab === 'pros' && <Users className="w-3 h-3" />}
@@ -280,6 +281,8 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
             <button
               onClick={() => setActiveTab('overlay')}
+              title="Overlay"
+              aria-label="Overlay"
               className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                 activeTab === 'overlay'
                   ? 'bg-cyan-500/25 text-cyan-300 border border-cyan-400/40 shadow-sm'
@@ -287,11 +290,13 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <Radio className="w-3 h-3" />
-              <span>Overlay</span>
+              <span className="sr-only">Overlay</span>
             </button>
 
             <button
               onClick={() => setActiveTab('builds')}
+              title="Builds"
+              aria-label="Builds"
               className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                 activeTab === 'builds'
                   ? 'bg-sky-500/25 text-sky-300 border border-sky-400/40 shadow-sm'
@@ -299,11 +304,27 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <Shield className="w-3 h-3" />
-              <span>Builds</span>
+              <span className="sr-only">Builds</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('market')}
+              className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                activeTab === 'market'
+                  ? 'bg-amber-500/25 text-amber-300 border border-amber-400/40 shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
+              }`}
+              title="Skin sales and Mythic shop"
+              aria-label="Skin sales and Mythic shop"
+            >
+              <ShoppingBag className="w-3 h-3" />
+              <span className="sr-only">Market</span>
             </button>
 
             <button
               onClick={() => setActiveTab('ranks')}
+              title="Ranks"
+              aria-label="Ranks"
               className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                 activeTab === 'ranks'
                   ? 'bg-amber-500/25 text-amber-300 border border-amber-400/40 shadow-sm'
@@ -311,11 +332,13 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <Trophy className="w-3 h-3" />
-              <span>Ranks</span>
+              <span className="sr-only">Ranks</span>
             </button>
 
             <button
               onClick={() => setActiveTab('matchups')}
+              title="Counters"
+              aria-label="Counters"
               className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                 activeTab === 'matchups'
                   ? 'bg-rose-500/25 text-rose-300 border border-rose-500/40 shadow-sm'
@@ -323,11 +346,13 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <Flame className="w-3 h-3" />
-              <span>Counters</span>
+              <span className="sr-only">Counters</span>
             </button>
 
             <button
               onClick={() => setActiveTab('pros')}
+              title="Players"
+              aria-label="Players"
               className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                 activeTab === 'pros'
                   ? 'bg-purple-500/25 text-purple-300 border border-purple-500/40 shadow-sm'
@@ -335,11 +360,13 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <Users className="w-3 h-3" />
-              <span>Players</span>
+              <span className="sr-only">Players</span>
             </button>
 
             <button
               onClick={() => setActiveTab('sandbox')}
+              title="Runes"
+              aria-label="Runes"
               className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                 activeTab === 'sandbox'
                   ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-500/40 shadow-sm'
@@ -347,7 +374,7 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <Sparkles className="w-3 h-3" />
-              <span>Runes</span>
+              <span className="sr-only">Runes</span>
             </button>
           </div>
 

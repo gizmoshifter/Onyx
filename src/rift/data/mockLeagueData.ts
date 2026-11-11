@@ -3129,6 +3129,7 @@ export const MYTHIC_SHOP_ITEMS: MythicShopItem[] = [
     mythicCost: 150,
     isPrestige: true,
     rotationNote: 'Leaves in Patch 14.24',
+    chromaNames: ['Rose Quartz', 'Moonlit', 'Obsidian'],
   },
   {
     id: 'mythic-2',
@@ -3138,6 +3139,7 @@ export const MYTHIC_SHOP_ITEMS: MythicShopItem[] = [
     mythicCost: 125,
     isPrestige: true,
     rotationNote: 'Leaves in Patch 14.24',
+    chromaNames: ['Obsidian', 'Pearl', 'Solar'],
   },
   {
     id: 'mythic-3',
@@ -3147,6 +3149,7 @@ export const MYTHIC_SHOP_ITEMS: MythicShopItem[] = [
     mythicCost: 100,
     isPrestige: false,
     rotationNote: 'Includes Icon & Border',
+    chromaNames: ['Ruby', 'Catseye'],
   },
   {
     id: 'mythic-4',
@@ -3156,6 +3159,7 @@ export const MYTHIC_SHOP_ITEMS: MythicShopItem[] = [
     mythicCost: 40,
     isPrestige: false,
     rotationNote: 'Exclusive Icon included',
+    chromaNames: ['Emerald', 'Amethyst', 'Rose Quartz'],
   },
 ];
 

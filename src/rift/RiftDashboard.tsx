@@ -14,6 +14,7 @@ import { UserSummonerCard } from './components/UserSummonerCard';
 import { SummonerPickerModal } from './components/SummonerPickerModal';
 import { HomeLiveFeed } from './components/HomeLiveFeed';
 import { LiveOverlay } from './components/LiveOverlay';
+import { SkinMarket } from './components/SkinMarket';
 import { Role, Region, ProMatch, UserSummonerProfile } from './types/league';
 import { CHAMPIONS_METADATA, RECENT_PRO_MATCHES, USER_SUMMONER_PRESETS } from './data/mockLeagueData';
 import type { VisualMode } from '../../src/App';
@@ -23,7 +24,7 @@ export default function App({ visualMode, onVisualModeChange }: { visualMode: Vi
   const [selectedPlayerId, setSelectedPlayerId] = useState<string>('faker');
   const [selectedRole, setSelectedRole] = useState<Role | 'ALL'>('ALL');
   const [selectedRegion, setSelectedRegion] = useState<Region>('ALL');
-  const [activeTab, setActiveTab] = useState<'builds' | 'overlay' | 'ranks' | 'matchups' | 'pros' | 'sandbox'>('builds');
+  const [activeTab, setActiveTab] = useState<'builds' | 'overlay' | 'market' | 'ranks' | 'matchups' | 'pros' | 'sandbox'>('builds');
   const [activeMatch, setActiveMatch] = useState<ProMatch | null>(null);
 
   // User Profile Picker (First Launch & Persistent HUD)
@@ -117,7 +118,10 @@ export default function App({ visualMode, onVisualModeChange }: { visualMode: Vi
           </div>
         )}
 
-        {/* Tab 1: HOME SCREEN (User Summoner HUD, Live Patch Feed, Champion Hero, Runes, Matches) */}
+        {/* Tab 1: MARKET */}
+        {activeTab === 'market' && <SkinMarket />}
+
+        {/* Tab 2: HOME SCREEN (User Summoner HUD, Live Patch Feed, Champion Hero, Runes, Matches) */}
         {activeTab === 'builds' && (
           <div className="space-y-6 animate-fadeIn">
             {/* User Selected Summoner HUD Card */}
@@ -152,7 +156,7 @@ export default function App({ visualMode, onVisualModeChange }: { visualMode: Vi
           </div>
         )}
 
-        {/* Tab 2: RANK SHOWCASE & TIMELINE SLIDER */}
+        {/* Tab 3: RANK SHOWCASE & TIMELINE SLIDER */}
         {activeTab === 'ranks' && (
           <div className="animate-fadeIn">
             <RankShowcase
@@ -207,11 +211,8 @@ export default function App({ visualMode, onVisualModeChange }: { visualMode: Vi
       {/* Clean Minimalist Onyx Footer */}
       <footer className="mt-auto border-t border-white/5 py-6 glass-panel text-xs text-slate-400 relative z-10">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded bg-black/60 border border-white/10 flex items-center justify-center">
-              <div className="w-2 h-2 rotate-45 bg-sky-400/80" />
-            </div>
-            <span className="font-heading font-extrabold tracking-widest text-slate-200">ONYX</span>
+          <div className="w-5 h-5 rounded bg-black/60 border border-white/10 flex items-center justify-center" aria-label="Onyx">
+            <div className="w-2 h-2 rotate-45 bg-sky-400/80" />
           </div>
           <span className="text-[11px] font-mono text-slate-400">14.23</span>
         </div>

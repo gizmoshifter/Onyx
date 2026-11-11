@@ -342,6 +342,7 @@ export interface MythicShopItem {
   mythicCost: number;
   isPrestige: boolean;
   rotationNote: string;
+  chromaNames?: string[];
 }
 
 
