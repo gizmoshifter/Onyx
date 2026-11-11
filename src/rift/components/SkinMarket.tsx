@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Clock3, Gem, Gamepad2, Image as ImageIcon, ShoppingBag, Sparkles, Tag } from 'lucide-react';
 import { CHAMPIONS_METADATA, CURRENT_SALES, MYTHIC_SHOP_ITEMS } from '../data/mockLeagueData';
+import { createMarketAdapter, type MarketSnapshot } from '../../lib/marketAdapter';
 
 type MarketTab = 'sales' | 'mythic';
 type ArtMode = 'splash' | 'loading';
@@ -10,6 +11,20 @@ const loadingUrl = (splashUrl: string) => splashUrl.replace('/splash/', '/loadin
 export const SkinMarket: React.FC = () => {
   const [marketTab, setMarketTab] = useState<MarketTab>('sales');
   const [artMode, setArtMode] = useState<ArtMode>('splash');
+  const [snapshot, setSnapshot] = useState<MarketSnapshot>();
+
+  useEffect(() => {
+    let mounted = true;
+    createMarketAdapter().getSnapshot().then((nextSnapshot) => {
+      if (mounted) setSnapshot(nextSnapshot);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const sales = snapshot?.sales ?? CURRENT_SALES;
+  const mythicItems = snapshot?.mythic ?? MYTHIC_SHOP_ITEMS;
 
   const championIcons = useMemo(
     () => new Map(CHAMPIONS_METADATA.map((champion) => [champion.name.toLowerCase(), champion.iconUrl])),
@@ -29,10 +44,10 @@ export const SkinMarket: React.FC = () => {
         <div className="market-tools">
           <div className="market-tabs" role="tablist" aria-label="Market tabs">
             <button className={marketTab === 'sales' ? 'active' : ''} onClick={() => setMarketTab('sales')} title="Skin sales" aria-label="Skin sales">
-              <Tag size={14} /> <span>{CURRENT_SALES.length}</span>
+              <Tag size={14} /> <span>{sales.length}</span>
             </button>
             <button className={marketTab === 'mythic' ? 'active' : ''} onClick={() => setMarketTab('mythic')} title="Mythic shop" aria-label="Mythic shop">
-              <Gem size={14} /> <span>{MYTHIC_SHOP_ITEMS.length}</span>
+              <Gem size={14} /> <span>{mythicItems.length}</span>
             </button>
           </div>
           <div className="art-toggle" role="group" aria-label="Artwork view">
@@ -48,7 +63,7 @@ export const SkinMarket: React.FC = () => {
 
       {marketTab === 'sales' && (
         <div className="market-grid">
-          {CURRENT_SALES.map((sale) => (
+          {sales.map((sale) => (
             <article className="market-card sale-market-card" key={sale.id}>
               <img src={artMode === 'splash' ? sale.splashUrl : loadingUrl(sale.splashUrl)} alt="" loading="lazy" decoding="async" />
               <div className="market-card-shade" />
@@ -67,7 +82,7 @@ export const SkinMarket: React.FC = () => {
 
       {marketTab === 'mythic' && (
         <div className="market-grid mythic-market-grid">
-          {MYTHIC_SHOP_ITEMS.map((item) => (
+          {mythicItems.map((item) => (
             <article className="market-card mythic-market-card" key={item.id}>
               <img src={artMode === 'splash' ? item.splashUrl : loadingUrl(item.splashUrl)} alt="" loading="lazy" decoding="async" />
               <div className="market-card-shade" />
@@ -87,7 +102,7 @@ export const SkinMarket: React.FC = () => {
         </div>
       )}
 
-      <div className="market-foot"><span title="Official Riot/Data Dragon art">◈ RIOT ART</span><span>⌁ {artMode === 'splash' ? 'SPLASH' : 'IN-GAME'}</span></div>
+      <div className="market-foot"><span title={snapshot?.note ?? 'Preview catalog; live commerce data is disabled'}>◈ RIOT ART</span><span>⌁ {artMode === 'splash' ? 'SPLASH' : 'IN-GAME'}</span></div>
     </section>
   );
 };

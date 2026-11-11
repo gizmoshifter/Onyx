@@ -55,11 +55,12 @@ npm run build
 
 ## Next data integrations
 
-1. Connect the sales, Mythic/chroma, splash, and esports cards to verified current feeds.
-2. Add source, region, rank scope, sample size, and update timestamps to any matchup or recommendation data.
-3. Add a native overlay window launcher so the compact view can be opened without changing the main window.
-4. Add post-game match history through a permitted and documented source.
-5. Add optional provider adapters only behind transparent limits and graceful fallbacks.
+1. Submit the Riot application review packet in `docs/RIOT-APP-REVIEW.md` and follow `docs/RIOT-DATA-ADAPTER.md`.
+2. Connect the sales, Mythic/chroma, splash, and esports cards to verified current feeds only after the source is approved.
+3. Add source, region, rank scope, sample size, and update timestamps to any matchup or recommendation data.
+4. Add a native overlay window launcher so the compact view can be opened without changing the main window.
+5. Add post-game match history through a permitted and documented source.
+6. Add optional provider adapters only behind transparent limits and graceful fallbacks.
 
 ## Riot disclaimer
 
