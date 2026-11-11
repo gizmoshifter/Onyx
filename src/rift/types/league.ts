@@ -35,6 +35,9 @@ export interface ChampionAbility {
   icon: string;
   description: string;
   symbol: string;
+  /** Optional static cooldown metadata for compact HUD sizing. */
+  cooldownSeconds?: number[];
+  cooldownClass?: 'short' | 'long';
 }
 
 export interface SkillOrder {
