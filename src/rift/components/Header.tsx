@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Shield, Trophy, Flame, Sparkles, Filter, ChevronDown, ChevronUp, Users, RefreshCw } from 'lucide-react';
+import { Search, Shield, Trophy, Flame, Sparkles, Filter, ChevronDown, ChevronUp, Users, RefreshCw, Radio } from 'lucide-react';
 import { Role, Region, UserSummonerProfile } from '../types/league';
 import { CHAMPIONS_METADATA, PRO_PROFILES } from '../data/mockLeagueData';
 import { getRankEmblemUrl } from '../utils/buildCalculations';
@@ -12,8 +12,8 @@ interface HeaderProps {
   selectedChampion: string;
   onSelectChampion: (champId: string) => void;
   onSelectPlayer: (playerId: string) => void;
-  activeTab: 'builds' | 'ranks' | 'matchups' | 'pros' | 'sandbox';
-  setActiveTab: (tab: 'builds' | 'ranks' | 'matchups' | 'pros' | 'sandbox') => void;
+  activeTab: 'builds' | 'overlay' | 'ranks' | 'matchups' | 'pros' | 'sandbox';
+  setActiveTab: (tab: 'builds' | 'overlay' | 'ranks' | 'matchups' | 'pros' | 'sandbox') => void;
   userProfile?: UserSummonerProfile;
   onOpenSummonerPicker?: () => void;
 }
@@ -116,6 +116,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Active Tab Badge */}
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sky-500/20 border border-sky-400/30 text-[11px] text-sky-300 font-mono font-semibold">
               {activeTab === 'builds' && <Shield className="w-3 h-3" />}
+              {activeTab === 'overlay' && <Radio className="w-3 h-3" />}
               {activeTab === 'ranks' && <Trophy className="w-3 h-3" />}
               {activeTab === 'matchups' && <Flame className="w-3 h-3" />}
               {activeTab === 'pros' && <Users className="w-3 h-3" />}
@@ -261,6 +262,18 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="border-t border-white/5 px-4 py-2 animate-fadeIn max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
           {/* Navigation Tabs */}
           <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+            <button
+              onClick={() => setActiveTab('overlay')}
+              className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                activeTab === 'overlay'
+                  ? 'bg-cyan-500/25 text-cyan-300 border border-cyan-400/40 shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
+              }`}
+            >
+              <Radio className="w-3 h-3" />
+              <span>Overlay</span>
+            </button>
+
             <button
               onClick={() => setActiveTab('builds')}
               className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
