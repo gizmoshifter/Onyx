@@ -80,8 +80,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#080a10] text-slate-100 flex flex-col font-sans selection:bg-sky-500/30 selection:text-sky-200 relative overflow-x-hidden">
-      {/* The live HUD keeps the animated mesh off for lower-end machines. */}
+      {/* Keep the animated mesh off in the HUD, but retain a static color wash. */}
       {activeTab !== 'overlay' && <AmbientBackground />}
+      {activeTab === 'overlay' && <div className="ambient-lite" aria-hidden="true" />}
 
       {/* Sleek Minimal Onyx Header */}
       <Header
