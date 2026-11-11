@@ -28,6 +28,7 @@
   },
   "bundle": {
     "active": true,
+    "icon": ["icons/icon.ico"],
     "targets": ["msi", "nsis"],
     "category": "Game",
     "shortDescription": "A lightweight League of Legends companion",
