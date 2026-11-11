@@ -197,7 +197,7 @@ async function configureOverlay(enabled: boolean): Promise<void> {
     await appWindow.setAlwaysOnTop(enabled);
     await appWindow.setDecorations(!enabled);
     await appWindow.setResizable(!enabled);
-    await appWindow.setSize(new LogicalSize(enabled ? 420 : 1180, enabled ? 240 : 780));
+    await appWindow.setSize(new LogicalSize(enabled ? 420 : 1180, enabled ? 360 : 780));
   } catch { /* Browser preview and older desktop builds keep the normal window. */ }
 }
 
@@ -219,6 +219,10 @@ function App() {
     void getChampionCatalog().then(result => { if (alive) setCatalog(result); }).catch(error => { if (alive) setCatalogError(error instanceof Error ? error.message : "Patch data unavailable"); });
     return () => { alive = false; };
   }, []);
+  useEffect(() => {
+    document.body.classList.toggle("onyx-overlay-mode", mode === "overlay");
+    return () => document.body.classList.remove("onyx-overlay-mode");
+  }, [mode]);
   useEffect(() => { void configureOverlay(mode === "overlay"); return () => { if (mode === "overlay") void configureOverlay(false); }; }, [mode]);
   useEffect(() => {
     let alive = true;
